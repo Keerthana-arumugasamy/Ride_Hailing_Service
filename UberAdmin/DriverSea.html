@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Data Display</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="#">
+    <style>
+        /* Additional CSS for reducing image size */
+        .driver img {
+            max-width: 150px;
+            /* Set maximum width */
+            max-height: 150px;
+            /* Set maximum height */
+        }
+    </style>
+    <style>
+        /* Add custom styles for the side navigation layout */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .sidenav {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            padding-top: 20px;
+            color: #fff;
+        }
+
+        .sidenav a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #fff;
+            display: block;
+        }
+
+        .sidenav a:hover {
+            background-color: #555;
+        }
+
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+
+        .message {
+            font-size: 24px;
+        }
+
+        .success {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+<!-- Side Navigation -->
+<div class="sidenav">
+    <h3>Menu</h3>
+    <a href="welcome.html">Home</a>
+    <a href="DriverForm.html">Driver Registeration</a>
+    <a href="DriverSea.html">Driver Details</a>
+    <a href="user.html">User</a>
+    <a href="index.html" onclick="logout()">Logout</a>
+</div>
+    <body>
+        <div class="container">
+            <h1>Driver Information</h1>
+            <div class="containers">
+                <a href="index.html">
+                    <button class="button">Home</button>
+                </a>
+            </div>
+            <input type="text" id="searchInput" placeholder="Search by username...">
+            <div id="dataContainer"></div>
+        </div>
+        <div id="editPopup" class="popup">
+            <div class="popup-content">
+                <h2>Edit Driver Information</h2>
+                <input type="hidden" id="existingImage" value="">
+                <span>Username</span><br>
+                <input type="text" id="editUsername" placeholder="Username"><br>
+                <span>Email</span><br>
+                <input type="email" id="editEmail" placeholder="Email"><br>
+                <span>PhoneNumber</span><br>
+                <input type="number" id="editPhone" placeholder="PhoneNumber"><br>
+                <span>AadharNumber</span><br>
+                <input type="number" id="editAadhar" placeholder="AadharNumber"><br>
+                <span>PanNumber</span><br>
+                <input type="text" id="editPan" placeholder="PanNumber"><br>
+                <span>DiabetesLevel</span><br>
+                <input type="text" id="editDia" placeholder="DiabetesLevel"><br>
+                <button id="updateBtn">Update</button>
+                <button id="deleteBtn">Delete</button>
+                <button id="cancelBtn">Cancel</button>
+            </div>
+        </div>
+
+
+
+
+        <script type="module">
+            // Import the functions you need from the Firebase SDK
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+            import { getDatabase, ref, get, child, onValue, set, remove } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+                // Your Firebase config here
+                apiKey: "AIzaSyBzI238GP7Ik-AmLoHE3GAIt7gTkaIr8x8",
+                authDomain: "uber-bdcfb.firebaseapp.com",
+                databaseURL: "https://uber-bdcfb-default-rtdb.firebaseio.com",
+                projectId: "uber-bdcfb",
+                storageBucket: "uber-bdcfb.appspot.com",
+                messagingSenderId: "1000032020464",
+                appId: "1:1000032020464:web:9cd952b8080ab042e19f35",
+                measurementId: "G-PFFFL6WYFX"
+            };
+
+
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+
+            // Get a reference to the database
+            const db = getDatabase(app);
+
+            // Reference to the specific data node in the database
+            const dataRef = ref(db, 'DriverInfo');
+
+            // Get the container where you want to display the data
+            const dataContainer = document.getElementById('dataContainer');
+
+            // ... (Your existing Firebase initialization and data fetching code)
+            // Define the handleEditClick function
+            function handleEditClick(event) {
+                const key = event.target.getAttribute("data-key");
+                // Now you can use the 'key' to perform any editing or modification actions you need
+                console.log("Edit button clicked for key:", key);
+
+            }
+
+            // Attach event listeners to the edit buttons
+            const editButtons = document.querySelectorAll(".edit-btn");
+            editButtons.forEach(button => {
+                button.addEventListener("click", handleEditClick);
+            });
+
+            const searchInput = document.getElementById('searchInput');
+
+            // Update displayed drivers on search input change
+            searchInput.addEventListener('input', () => {
+                const searchText = searchInput.value.toLowerCase();
+
+                // Fetch and display data using onValue from db
+                onValue(dataRef, (snapshot) => {
+                    const data = snapshot.val();
+
+                    if (data) {
+                        // Clear previous data
+                        dataContainer.innerHTML = "";
+
+                        // Iterate through the data and display
+                        for (const key in data) {
+                            if (data.hasOwnProperty(key)) {
+                                const driver = data[key];
+
+                                if (driver.username.toLowerCase().includes(searchText)) {
+                                    const driverElement = document.createElement("div");
+                                    driverElement.classList.add("driver");
+
+                                    driverElement.innerHTML = `
+                            <h2>Driver Information</h2>
+                            <p><strong>Username:</strong> ${driver.username}</p>
+                            <p><strong>Email:</strong> ${driver.email}</p>
+                            <p><strong>Phone Number:</strong> ${driver.PhoneNumber}</p>
+                            <p><strong>Aadhar Number:</strong> ${driver.AadharNumber}</p>
+                            <p><strong>Pan Number:</strong> ${driver.PanNumber}</p>
+                            <p><strong>Diabetes Level:</strong> ${driver.DiabetesLevel}</p>
+                            <img src="${driver.image}" alt="Driver Image">
+                            <button class="edit-btn" data-key="${key}">Edit</button>
+                            <hr>
+                        `;
+
+                                    dataContainer.appendChild(driverElement);
+                                }
+                            }
+                            const editButtons = document.querySelectorAll(".edit-btn");
+                            editButtons.forEach(button => {
+                                button.addEventListener("click", handleEditClick);
+                            });
+                        }
+
+                        if (dataContainer.children.length === 0) {
+                            dataContainer.innerHTML = '<p>No matching data found.</p>';
+                        }
+                    } else {
+                        dataContainer.innerHTML = '<p>No data available.</p>';
+                    }
+                }, {
+                    onlyOnce: true // Fetch the data only once
+                });
+            });
+
+            // Fetch and display data using onValue img
+            onValue(dataRef, (snapshot) => {
+                const data = snapshot.val();
+
+                if (data) {
+                    // Clear previous data
+                    dataContainer.innerHTML = "";
+
+                    // Iterate through the data and display
+                    for (const key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            const driver = data[key];
+                            
+        
+                            const driverElement = document.createElement("div");
+                            driverElement.classList.add("driver");
+
+                            driverElement.innerHTML = `
+                            <h2>Driver Information</h2>
+                            <p><strong>Username:</strong> ${driver.username}</p>
+                            <p><strong>Email:</strong> ${driver.email}</p>
+                            <p><strong>Phone Number:</strong> ${driver.PhoneNumber}</p>
+                            <p><strong>Aadhar Number:</strong> ${driver.AadharNumber}</p>
+                            <p><strong>Pan Number:</strong> ${driver.PanNumber}</p>
+                            <p><strong>Diabetes Level:</strong> ${driver.DiabetesLevel}</p>
+                            <img src="${driver.image}" alt="Driver Image">
+                            <button class="edit-btn" data-key="${key}">Edit</button>
+                            <hr>
+                        `;
+
+                            dataContainer.appendChild(driverElement);
+                        }
+                    }
+                
+
+                    // Attach event listeners to the edit buttons
+                    const editButtons = document.querySelectorAll(".edit-btn");
+                    editButtons.forEach(button => {
+                        button.addEventListener("click", handleEditClick);
+                    });
+                } else {
+                    dataContainer.innerHTML = '<p>No data available.</p>';
+                }
+                // ... (Your existing code)
+
+                // Reference to the edit popup and its elements
+                const editPopup = document.getElementById('editPopup');
+                const editUsername = document.getElementById('editUsername');
+                const editEmail = document.getElementById('editEmail');
+                const editPhone = document.getElementById('editPhone');
+                const editAadhar = document.getElementById('editAadhar');
+                const editPan = document.getElementById('editPan');
+                const editDia=document.getElementById('editDia');
+                const updateBtn = document.getElementById('updateBtn');
+                const deleteBtn = document.getElementById('deleteBtn');
+                const cancelBtn = document.getElementById('cancelBtn');
+
+                let selectedKey = null; // Track the selected driver's key
+
+                // Handle the "Edit" button click
+                function handleEditClick(event) {
+                    selectedKey = event.target.getAttribute("data-key");
+                    const driver = data[selectedKey];
+
+                    editUsername.value = driver.username;
+                    editEmail.value = driver.email;
+                    editPhone.value = driver.PhoneNumber;
+                    editAadhar.value = driver.AadharNumber;
+                    editPan.value = driver.PanNumber;
+                    editDia.value = driver.DiabetesLevel;
+
+                    // Store the existing image URL in a hidden field
+                    const existingImageField = document.getElementById('existingImage');
+                    existingImageField.value = driver.image;
+
+                    editPopup.style.display = 'block';
+                }
+
+                // Handle the "Update" button click
+                updateBtn.addEventListener('click', () => {
+                    if (selectedKey) {
+                        const updatedData = {
+                            username: editUsername.value,
+                            email: editEmail.value,
+                            PhoneNumber: editPhone.value,
+                            AadharNumber: editAadhar.value,
+                            PanNumber: editPan.value,
+                            DiabetesLevel : editDia.value,
+                            image: document.getElementById('existingImage').value, // Retain the existing image URL
+                            // Include other properties if needed
+                        };
+
+                        // Update the data in Firebase
+                        set(child(dataRef, selectedKey), updatedData);
+
+                        editPopup.style.display = 'none';
+                    }
+                });
+
+
+
+                // Handle the "Delete" button click
+                deleteBtn.addEventListener('click', () => {
+                    if (selectedKey) {
+                        // Display a confirmation popup
+                        const reason = prompt("Enter reason for deletion:");
+                        if (reason !== null && reason.trim() !== "") {
+                            // Fetch the driver data before deleting
+                            const driverToDelete = data[selectedKey];
+
+                            // Store the deleted data in DeletedDriver using the username as a key
+                            set(child(dataRef, 'DeletedDriver', driverToDelete.username), {
+                                deletedData: driverToDelete,
+                                reason: reason
+                            })
+                                .then(() => {
+                                    // Remove the data from the main node
+                                    remove(child(dataRef, selectedKey));
+
+                                    // Remove the driver element from the UI
+                                    const driverElement = document.querySelector(`[data-key="${selectedKey}"]`);
+                                    if (driverElement) {
+                                        driverElement.remove();
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error deleting data:", error);
+                                });
+
+                            editPopup.style.display = 'none';
+                        }
+                    }
+                });
+
+
+
+                // Handle the "Cancel" button click
+                cancelBtn.addEventListener('click', () => {
+                    // Clear the selectedKey and reset the form
+                    selectedKey = null;
+                    resetForm();
+                    editPopup.style.display = 'none';
+                });
+
+                function resetForm() {
+                    // Reset form fields to their original values
+                    editUsername.value = '';
+                    editEmail.value = '';
+                    editPhone.value = '';
+                    editAadhar.value = '';
+                    editPan.value = '';
+                    editDia.value = '';
+                }
+
+            });
+
+
+        </script>
+    </body>
+
+</html>

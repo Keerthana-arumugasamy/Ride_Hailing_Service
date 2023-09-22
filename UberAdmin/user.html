@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Data Display</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="#">
+    <style>
+        /* Add custom styles for the side navigation layout */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .sidenav {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            padding-top: 20px;
+            color: #fff;
+        }
+
+        .sidenav a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #fff;
+            display: block;
+        }
+
+        .sidenav a:hover {
+            background-color: #555;
+        }
+
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+
+        .message {
+            font-size: 24px;
+        }
+
+        .success {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+     <!-- Side Navigation -->
+     <div class="sidenav">
+        <h3>Menu</h3>
+        <a href="welcome.html">Home</a>
+        <a href="DriverForm.html">Driver Registeration</a>
+        <a href="DriverSea.html">Driver Details</a>
+        <a href="user.html">User</a>
+        <a href="index.html" onclick="logout()">Logout</a>
+    </div>
+    <div class="container">
+        <h1>User Information</h1>
+        <div class="containers">
+            <a href="welcome.html">
+                <button class="button">Home</button>
+            </a>
+        </div>
+        <input type="text" id="searchInput" placeholder="Search by username...">
+        <div id="dataContainer"></div>
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, get, child, onValue, set, remove } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            // Your Firebase config here
+            apiKey: "AIzaSyBzI238GP7Ik-AmLoHE3GAIt7gTkaIr8x8",
+            authDomain: "uber-bdcfb.firebaseapp.com",
+            databaseURL: "https://uber-bdcfb-default-rtdb.firebaseio.com",
+            projectId: "uber-bdcfb",
+            storageBucket: "uber-bdcfb.appspot.com",
+            messagingSenderId: "1000032020464",
+            appId: "1:1000032020464:web:9cd952b8080ab042e19f35",
+            measurementId: "G-PFFFL6WYFX"
+        };
+
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // Get a reference to the database
+        const db = getDatabase(app);
+
+        // Reference to the specific data node in the database
+        const dataRef = ref(db, 'Riders');
+
+        // Get the container where you want to display the data
+        const dataContainer = document.getElementById('dataContainer');
+        const searchInput = document.getElementById('searchInput');
+
+        // Function to display riders based on search input
+        function displayRiders(searchText) {
+            // Fetch and display data using onValue from db
+            onValue(dataRef, (snapshot) => {
+                const data = snapshot.val();
+
+                if (data) {
+                    // Clear previous data
+                    dataContainer.innerHTML = "";
+
+                    // Iterate through the data and display matching riders
+                    for (const key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            const rider = data[key];
+
+                            if (rider.firstName.toLowerCase().includes(searchText)) {
+                                const riderElement = document.createElement("div");
+                                riderElement.classList.add("Rider");
+
+                                riderElement.innerHTML = `
+                                    <h2>Rider Information</h2>
+                                    <p><strong>First Name:</strong> ${rider.firstName}</p>
+                                    <p><strong>Last Name:</strong> ${rider.lastName}</p>
+                                    <p><strong>Phone Number:</strong> ${rider.phoneNumber}</p>
+                                    <hr>
+                                `;
+
+                                dataContainer.appendChild(riderElement);
+                            }
+                        }
+                    }
+
+                    if (dataContainer.children.length === 0) {
+                        dataContainer.innerHTML = '<p>No matching data found.</p>';
+                    }
+                } else {
+                    dataContainer.innerHTML = '<p>No data available.</p>';
+                }
+            });
+        }
+
+        // Display all riders initially
+        displayRiders("");
+
+        // Update displayed riders on search input change
+        searchInput.addEventListener('input', () => {
+            const searchText = searchInput.value.toLowerCase();
+            displayRiders(searchText);
+        });
+    </script>
+</body>
+
+</html>

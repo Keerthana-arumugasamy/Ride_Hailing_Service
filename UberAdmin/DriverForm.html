@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="#">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver_Form</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Add custom styles for the side navigation layout */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .sidenav {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            padding-top: 20px;
+            color: #fff;
+        }
+
+        .sidenav a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #fff;
+            display: block;
+        }
+
+        .sidenav a:hover {
+            background-color: #555;
+        }
+
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+
+        .message {
+            font-size: 24px;
+        }
+
+        .success {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+         <!-- Side Navigation -->
+     <div class="sidenav">
+        <h3>Menu</h3>
+        <a href="welcome.html">Home</a>
+        <a href="DriverForm.html">Driver Registeration</a>
+        <a href="DriverSea.html">Driver Details</a>
+        <a href="user.html">User</a>
+        <a href="index.html" onclick="logout()">Logout</a>
+    </div>      
+    <div class="box">
+        <div class="form">
+            <h2>Registration Form</h2>
+            <form action="#" id="myForm"> 
+                <div class="inputbox">
+                    <input type="text" value="" id="username" onkeydown="return /[a-zA-Z]/i.test(event.key)" required>
+                    <span>Username</span>
+                </div>
+                <div class="inputbox">
+                    <input type="email" value="" id="email" required>
+                    <span>E-mail</span>
+                </div>
+                <div class="inputbox">
+                    <input type="number" value="" id="phone" required>
+                    <span>Phone Number</span>
+                </div>
+                <div class="inputbox">
+                    <div class="inputbox">
+                          <div class="inputbox">
+                            
+                            <input type="text" class="inputbox" id="aadhar" placeholder="Enter Your Aadhar Card No." name="exampleInputAadharCard" required>
+                            <span>Aadhar Card No.</span>
+                            <small id="message" class="inputbox"></small>
+                          </div>
+                          <button type="button" class="subjj" onclick="verify()">Verify</button>
+                    </div>
+                </div><br>
+                <script type="text/javascript">
+                    // multiplication table
+                    const d = [
+                        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                        [1, 2, 3, 4, 0, 6, 7, 8, 9, 5],
+                        [2, 3, 4, 0, 1, 7, 8, 9, 5, 6],
+                        [3, 4, 0, 1, 2, 8, 9, 5, 6, 7],
+                        [4, 0, 1, 2, 3, 9, 5, 6, 7, 8],
+                        [5, 9, 8, 7, 6, 0, 4, 3, 2, 1],
+                        [6, 5, 9, 8, 7, 1, 0, 4, 3, 2],
+                        [7, 6, 5, 9, 8, 2, 1, 0, 4, 3],
+                        [8, 7, 6, 5, 9, 3, 2, 1, 0, 4],
+                        [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+                    ]
+                
+                    // permutation table
+                    const p = [
+                        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                        [1, 5, 7, 6, 2, 8, 3, 0, 9, 4],
+                        [5, 8, 0, 3, 7, 9, 6, 1, 4, 2],
+                        [8, 9, 1, 6, 0, 4, 3, 5, 2, 7],
+                        [9, 4, 5, 3, 1, 2, 6, 8, 7, 0],
+                        [4, 2, 8, 6, 5, 7, 3, 9, 0, 1],
+                        [2, 7, 9, 3, 8, 0, 6, 4, 1, 5],
+                        [7, 0, 4, 6, 9, 1, 3, 2, 5, 8]
+                    ]
+                
+                    // validates Aadhar number received as string
+                    function validate(aadharNumber) {
+                        let c = 0
+                        let invertedArray = aadharNumber.split('').map(Number).reverse()
+                
+                        invertedArray.forEach((val, i) => {
+                            c = d[c][p[(i % 8)][val]]
+                        })
+                
+                        return (c === 0)
+                    }
+                
+                    function verify() {
+                        var message = document.getElementById("message");
+                        var aadharNo = document.getElementById("aadhar").value;
+                        if(validate(aadharNo)) {
+                            message.innerHTML = 'Your aadhar card no. valid';
+                        } else {
+                            message.innerHTML = 'Your aadhar card no. not valid';
+                        }
+                    }
+                    </script>
+                <div class="inputbox">
+                    <input type="text" value="" id="pan" required>
+                    <span>Pan Number</span>
+                </div>
+                <div class="inputbox">
+                    <input type="text" value="" id="dia" required>
+                    <span>Diabetes Level</span>
+                </div>
+                <div class="inputbox">
+                    <input type="file" accept="image/*" id="image" required>
+                    <span>Driver Image</span>
+                </div>
+                
+                <center><input type="submit" value="Submit" class="sub" id="submit"></center>
+                
+                
+                
+            </form>
+        </div>
+    </div>
+         
+    <script type="module">
+           // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+// Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBzI238GP7Ik-AmLoHE3GAIt7gTkaIr8x8",
+    authDomain: "uber-bdcfb.firebaseapp.com",
+    databaseURL: "https://uber-bdcfb-default-rtdb.firebaseio.com",
+    projectId: "uber-bdcfb",
+    storageBucket: "uber-bdcfb.appspot.com",
+    messagingSenderId: "1000032020464",
+    appId: "1:1000032020464:web:9cd952b8080ab042e19f35",
+    measurementId: "G-PFFFL6WYFX"
+        };
+
+// Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+    // Initialize Firebase Storage
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js";
+    const storage = getStorage(app);
+//get ref to database services
+         const db = getDatabase(app);
+
+         document.getElementById("myForm").addEventListener('submit', function(e){
+          e.preventDefault();   
+          set(ref(db, 'DriverInfo/' + document.getElementById("username").value),
+          {
+
+            username: document.getElementById("username").value,
+            email: document.getElementById("email").value,
+            PhoneNumber: document.getElementById("phone").value,
+            AadharNumber: document.getElementById("aadhar").value,
+            PanNumber: document.getElementById("pan").value,
+            DiabetesLevel: document.getElementById("dia").value,
+
+          });
+          
+            /*alert("Login Sucessfull  !");*/
+            
+         })
+         document.getElementById("myForm").addEventListener('submit', async function(e){
+        e.preventDefault();
+
+        const imageInput = document.getElementById("image");
+        const imageFile = imageInput.files[0];
+
+        try {
+            // Upload the image to Firebase Storage
+            const imageRef = storageRef(storage, 'driver_images/' + imageFile.name);
+            await uploadBytes(imageRef, imageFile);
+
+            // Get the image URL from Firebase Storage
+            const imageUrl = await getDownloadURL(imageRef);
+
+            // Store the driver information in the database
+            set(ref(db, 'DriverInfo/' + document.getElementById("username").value), {
+                username: document.getElementById("username").value,
+                email: document.getElementById("email").value,
+                PhoneNumber: document.getElementById("phone").value,
+                AadharNumber: document.getElementById("aadhar").value,
+                PanNumber: document.getElementById("pan").value,
+                DiabetesLevel: document.getElementById("dia").value,
+                image: imageUrl, // Store the image URL
+            });
+
+            alert("Registration Successful!");
+        } catch (error) {
+            console.error("Error uploading image:", error);
+        }
+    });
+        
+    </script>
+   
+</body>
+</html>
